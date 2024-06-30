@@ -1,5 +1,9 @@
 source 'https://rubygems.org'
 
+# Needed until Ruby 3.3.4 is released https://github.com/ruby/ruby/pull/11006
+# Details: https://github.com/ruby/net-pop/issues/26
+gem 'net-pop', github: 'ruby/net-pop'
+
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem 'rails', '~> 7.2.0.beta2'
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
