@@ -51,6 +51,7 @@ jobs:
 
     env:
       RAILS_ENV: test
+      PGHOST: postgres
 
     steps:
       - name: Checkout code
