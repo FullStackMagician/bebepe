@@ -20,5 +20,5 @@ if %w[development test].include? Rails.env
   task lint: %i[rubocop brakeman]
 
   task(:default).clear
-  task default: %i[lint]
+  task default: %i[lint spec]
 end
