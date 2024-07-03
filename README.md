@@ -1,5 +1,7 @@
 # BeBePe
 
+Track achievements, manage job applications, and grow your career with ease. Built with Ruby on Rails.
+
 ## Conventional Commits
 
 This project uses [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages.
