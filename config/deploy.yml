@@ -1,0 +1,205 @@
+# Name of your application. Used to uniquely configure containers.
+service: bebepe
+
+# Name of the container image.
+image: svyatov/bebepe
+
+# Configure custom arguments for Traefik.
+traefik:
+  image: traefik:2.11
+  options:
+    publish:
+      - "443:443"
+    volume:
+      - "/letsencrypt/acme.json:/letsencrypt/acme.json"
+    network: "private"
+  args:
+    entryPoints.web.address: ":80"
+    entryPoints.websecure.address: ":443"
+    entryPoints.web.http.redirections.entryPoint.to: websecure
+    entryPoints.web.http.redirections.entryPoint.scheme: https
+    entryPoints.web.http.redirections.entrypoint.permanent: true
+    certificatesResolvers.letsencrypt.acme.email: "leo@fsm.dev"
+    certificatesResolvers.letsencrypt.acme.storage: "/letsencrypt/acme.json"
+    certificatesResolvers.letsencrypt.acme.tlschallenge: true
+    certificatesResolvers.letsencrypt.acme.httpchallenge: true
+    certificatesResolvers.letsencrypt.acme.httpchallenge.entrypoint: web
+    accesslog: true
+    accesslog.format: json
+    accesslog.filters.minduration: 10ms
+
+# Deploy to these servers.
+servers:
+  web:
+    hosts:
+      - 67.205.188.180
+    options:
+      network: private
+    labels:
+      traefik.http.routers.bebepe.rule: Host(`bebepe.com`) || Host(`www.bebepe.com`)
+      traefik.http.routers.bebepe.middlewares: redirect-to-www
+      traefik.http.routers.bebepe-secure.entrypoints: websecure
+      traefik.http.routers.bebepe-secure.rule: Host(`bebepe.com`) || Host(`www.bebepe.com`)
+      traefik.http.routers.bebepe-secure.tls: true
+      traefik.http.routers.bebepe-secure.tls.certresolver: letsencrypt
+      traefik.http.routers.bebepe-secure.middlewares: redirect-to-www
+      traefik.http.middlewares.redirect-to-www.redirectregex.regex: ^https?://bebepe\.com/(.*)
+      traefik.http.middlewares.redirect-to-www.redirectregex.replacement: https://www.bebepe.com/${1}
+      traefik.http.middlewares.redirect-to-www.redirectregex.permanent: true
+
+# Credentials for your image host.
+registry:
+  # Specify the registry server, if you're not using Docker Hub
+  # server: registry.digitalocean.com / ghcr.io / ...
+  username:
+    - DOCKER_REGISTRY_USER
+
+  # Always use an access token rather than real password when possible.
+  password:
+    - DOCKER_REGISTRY_PASSWORD
+
+# Inject ENV variables into containers (secrets come from .env).
+# Remember to run `kamal env push` after making changes!
+env:
+  clear:
+    DB_HOST: bebepe-db
+    REDIS_URL: redis://bebepe-redis:6379/0
+  secret:
+    - RAILS_MASTER_KEY
+    - POSTGRES_PASSWORD
+
+# Use a different ssh user than root
+ssh:
+  user: deploy
+
+# Configure builder setup.
+builder:
+  args:
+    RAILS_ENV: production
+  cache:
+    type: gha
+  local:
+    arch: amd64
+
+accessories:
+  db:
+    image: postgres:16
+    host: 67.205.188.180
+    port: 127.0.0.1:5432:5432
+    options:
+      network: private
+    env:
+      clear:
+        POSTGRES_USER: bbp
+        POSTGRES_DB: bbp_production
+      secret:
+        - POSTGRES_PASSWORD
+    files:
+      - config/init.sql:/docker-entrypoint-initdb.d/setup.sql
+    directories:
+      - /home/deploy/postgres:/var/lib/postgresql/data
+    # Use https://pgtune.leopard.in.ua to tweak params depending on the server properties
+    # Params below are for this configuration:
+    # - DB Version: 16
+    # - OS Type: linux
+    # - DB Type: web
+    # - Total Memory (RAM): 1 GB
+    # - CPUs num: 1
+    # - Connections num: 100
+    # - Data Storage: ssd
+    cmd: >
+      postgres
+      -c max_connections=100
+      -c shared_buffers=256MB
+      -c effective_cache_size=768MB
+      -c maintenance_work_mem=64MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=7864kB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+      -c work_mem=1310kB
+      -c huge_pages=off
+      -c min_wal_size=1GB
+      -c max_wal_size=4GB
+
+  redis:
+    image: redis:7
+    host: 67.205.188.180
+    port: 127.0.0.1:6379:6379
+    options:
+      network: private
+    volumes:
+      - /home/deploy/redis:/data
+    cmd: >
+      redis-server
+      --maxmemory 128mb
+      --maxmemory-policy noeviction
+      --appendonly yes
+      --loglevel warning
+
+
+# Bridge fingerprinted assets, like JS and CSS, between versions to avoid
+# hitting 404 on in-flight requests. Combines all files from new and old
+# version inside the asset_path.
+asset_path: /rails/public/assets
+
+# Use accessory services (secrets come from .env).
+# accessories:
+#   db:
+#     image: mysql:8.0
+#     host: 192.168.0.2
+#     port: 3306
+#     env:
+#       clear:
+#         MYSQL_ROOT_HOST: '%'
+#       secret:
+#         - MYSQL_ROOT_PASSWORD
+#     files:
+#       - config/mysql/production.cnf:/etc/mysql/my.cnf
+#       - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
+#     directories:
+#       - data:/var/lib/mysql
+#   redis:
+#     image: redis:7.0
+#     host: 192.168.0.2
+#     port: 6379
+#     directories:
+#       - data:/data
+
+# Configure custom arguments for Traefik. Be sure to reboot traefik when you modify it.
+# traefik:
+#   args:
+#     accesslog: true
+#     accesslog.format: json
+
+# Configure a custom healthcheck (default is /up on port 3000)
+# healthcheck:
+#   path: /healthz
+#   port: 4000
+
+# Bridge fingerprinted assets, like JS and CSS, between versions to avoid
+# hitting 404 on in-flight requests. Combines all files from new and old
+# version inside the asset_path.
+#
+# If your app is using the Sprockets gem, ensure it sets `config.assets.manifest`.
+# See https://github.com/basecamp/kamal/issues/626 for details
+#
+# asset_path: /rails/public/assets
+
+# Configure rolling deploys by setting a wait time between batches of restarts.
+# boot:
+#   limit: 10 # Can also specify as a percentage of total hosts, such as "25%"
+#   wait: 2
+
+# Configure the role used to determine the primary_host. This host takes
+# deploy locks, runs health checks during the deploy, and follow logs, etc.
+#
+# Caution: there's no support for role renaming yet, so be careful to cleanup
+#          the previous role on the deployed hosts.
+# primary_role: web
+
+# Controls if we abort when see a role with no hosts. Disabling this may be
+# useful for more complex deploy configurations.
+#
+# allow_empty_roles: false
