@@ -1,0 +1,9 @@
+---
+- hosts: all
+  become: yes
+  remote_user: "{{ admin_user }}"
+  gather_facts: no
+
+  roles:
+    - docker
+    - app

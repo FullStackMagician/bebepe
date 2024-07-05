@@ -1,0 +1,11 @@
+- name: Ensure the deploy user has the GitHub Actions SSH key
+  ansible.builtin.authorized_key:
+    user: "{{ deploy_user }}"
+    state: present
+    key: "{{ gha_ssh_public_key }}"
+
+- name: Ensure the deploy user has SSH key for admin user
+  ansible.builtin.authorized_key:
+    user: "{{ deploy_user }}"
+    state: present
+    key: "{{ admin_ssh_public_key }}"

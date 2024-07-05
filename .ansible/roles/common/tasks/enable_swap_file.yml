@@ -1,0 +1,55 @@
+- name: Check if swap is already active
+  ansible.builtin.shell: swapon --show=NAME --noheadings
+  changed_when: false
+  register: swapon
+
+- name: Create a swap file of specified size
+  ansible.builtin.command: fallocate -l {{ swapfile_size }} {{ swapfile_path }}
+  args:
+    creates: "{{ swapfile_path }}"
+  when: swapfile_path not in swapon.stdout
+
+- name: Secure the swap file by setting proper permissions
+  ansible.builtin.file:
+    path: "{{ swapfile_path }}"
+    owner: root
+    group: root
+    mode: '0600'
+  when: swapfile_path not in swapon.stdout
+
+- name: Setup the swap file
+  ansible.builtin.command: mkswap {{ swapfile_path }}
+  when: swapfile_path not in swapon.stdout
+
+- name: Turn on swap
+  ansible.builtin.command: swapon {{ swapfile_path }}
+  when: swapfile_path not in swapon.stdout
+
+- name: Backup fstab before modification
+  ansible.builtin.copy:
+    remote_src: true
+    src: /etc/fstab
+    dest: /etc/fstab.backup
+    backup: yes
+
+- name: Add swap entry to fstab
+  ansible.builtin.blockinfile:
+    path: /etc/fstab
+    block: |
+      {{ swapfile_path }} none swap sw 0 0
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
+  when: swapfile_path not in swapon.stdout
+
+- name: Set swappiness value
+  ansible.builtin.sysctl:
+    name: vm.swappiness
+    value: 10
+    state: present
+    reload: yes
+
+- name: Set vfs cache pressure
+  ansible.builtin.sysctl:
+    name: vm.vfs_cache_pressure
+    value: 50
+    state: present
+    reload: yes

@@ -1,0 +1,13 @@
+# Size of the swap file
+swapfile_path: /swapfile
+swapfile_size: 2G
+
+# System users
+admin_user: "tooro"
+deploy_user: "deploy"
+
+# Admin public key, so you can SSH into the server
+admin_ssh_public_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFAJ6xXAxFHNKCuMfkCfeoyUZV3XXvupwRt/DzI+wXlu leonid"
+
+# Public key, so GitHub Actions can deploy the app
+gha_ssh_public_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPcVRay+iZNQtmV8IvXni7s6GKqsFc/FtWNBAq15dlnv github@actions"

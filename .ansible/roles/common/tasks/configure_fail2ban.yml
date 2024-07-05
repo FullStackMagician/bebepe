@@ -1,0 +1,62 @@
+- name: Set default bantime
+  community.general.ini_file:
+    path: /etc/fail2ban/jail.d/default.conf
+    section: DEFAULT
+    option: bantime
+    value: '60m'
+    mode: '0644'
+
+- name: Set default findtime
+  community.general.ini_file:
+    path: /etc/fail2ban/jail.d/default.conf
+    section: DEFAULT
+    option: findtime
+    value: '10m'
+
+- name: Set default maxretry
+  community.general.ini_file:
+    path: /etc/fail2ban/jail.d/default.conf
+    section: DEFAULT
+    option: maxretry
+    value: '5'
+
+- name: Enable and configure recidive jail
+  community.general.ini_file:
+    path: /etc/fail2ban/jail.d/recidive.conf
+    section: recidive
+    option: enabled
+    value: 'true'
+
+- name: Set recidive bantime
+  community.general.ini_file:
+    path: /etc/fail2ban/jail.d/recidive.conf
+    section: recidive
+    option: bantime
+    value: '1w'
+
+- name: Set recidive findtime
+  community.general.ini_file:
+    path: /etc/fail2ban/jail.d/recidive.conf
+    section: recidive
+    option: findtime
+    value: '1d'
+
+- name: Set default loglevel
+  community.general.ini_file:
+    path: /etc/fail2ban/fail2ban.d/default.conf
+    section: DEFAULT
+    option: loglevel
+    value: 'INFO'
+
+- name: Set default dbpurgeage
+  community.general.ini_file:
+    path: /etc/fail2ban/fail2ban.d/default.conf
+    section: DEFAULT
+    option: dbpurgeage
+    value: '648000'
+
+- name: Restart fail2ban
+  ansible.builtin.systemd:
+    name: fail2ban
+    state: restarted
+    enabled: yes

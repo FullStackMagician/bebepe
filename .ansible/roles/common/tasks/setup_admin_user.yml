@@ -1,0 +1,20 @@
+- name: Create admin user
+  ansible.builtin.user:
+    name: "{{ admin_user }}"
+    comment: "The admin user"
+    shell: /bin/bash
+    create_home: yes
+
+- name: Allow admin user to execute sudo without password
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: '^{{ admin_user }}'
+    line: '{{ admin_user }} ALL=(ALL) NOPASSWD: ALL'
+    validate: 'visudo -cf %s'
+
+- name: Ensure the admin user has SSH key for admin user
+  ansible.builtin.authorized_key:
+    user: "{{ admin_user }}"
+    state: present
+    key: "{{ admin_ssh_public_key }}"
