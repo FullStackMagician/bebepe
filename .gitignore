@@ -39,9 +39,9 @@
 
 /node_modules
 
-# Yarn (https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored)
-.pnp.*
+# Yarn Zero-Intalls (https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored)
 .yarn/*
+!.yarn/cache
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
