@@ -87,4 +87,4 @@ production:
   <<: *default
   database: bbp_production
   username: bbp
-  password: <%= ENV["BBP_DATABASE_PASSWORD"] %>
+  password: <%= ENV["POSTGRES_PASSWORD"] %>
