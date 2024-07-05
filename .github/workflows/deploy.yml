@@ -35,16 +35,12 @@ jobs:
       - name: Expose GitHub Runtime for cache
         uses: crazy-max/ghaction-github-runtime@v3
 
-      - name: Configure 1Password Service Account
-        uses: 1password/load-secrets-action/configure@v2
-        with:
-          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-
-      - name: Load SSH deploy key from 1Password
+      - name: Load secrets from 1Password
         uses: 1password/load-secrets-action@v2
         with:
           export-env: true
         env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
           DEPLOY_SSH_KEY: "op://BeBePe DevOps/GHA SSH Key/id_ed25519"
 
       - name: Set up SSH
