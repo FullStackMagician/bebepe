@@ -66,3 +66,8 @@ group :development, :test do
   # Simply the best testing framework for Ruby [https://github.com/rspec/rspec-rails]
   gem 'rspec-rails', '~> 6.1.3'
 end
+
+group :deploy do
+  # See https://kamal-deploy.org
+  gem 'kamal', require: false
+end

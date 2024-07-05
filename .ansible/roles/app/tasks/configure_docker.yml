@@ -1,0 +1,5 @@
+- name: Create a Docker network named 'private'
+  community.docker.docker_network:
+    name: private
+    driver: bridge
+    state: present

@@ -1,0 +1,19 @@
+- name: Allow SSH
+  community.general.ufw:
+    port: ssh
+    rule: allow
+
+- name: Allow HTTP
+  community.general.ufw:
+    port: http
+    rule: allow
+
+- name: Allow HTTPS
+  community.general.ufw:
+    port: https
+    rule: allow
+
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled
+    default: deny

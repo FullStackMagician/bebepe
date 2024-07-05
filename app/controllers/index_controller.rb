@@ -1,5 +1,3 @@
 class IndexController < ApplicationController
-  def show
-    render plain: 'Hello world!'
-  end
+  def show; end
 end

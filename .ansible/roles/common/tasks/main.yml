@@ -1,0 +1,6 @@
+- import_tasks: upgrade_packages.yml
+- import_tasks: setup_admin_user.yml
+- import_tasks: install_required_packages.yml
+- import_tasks: configure_fail2ban.yml
+- import_tasks: configure_ufw.yml
+- import_tasks: enable_swap_file.yml

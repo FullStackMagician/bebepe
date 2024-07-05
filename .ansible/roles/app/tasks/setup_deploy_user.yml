@@ -1,0 +1,12 @@
+- name: Create deploy user
+  ansible.builtin.user:
+    name: "{{ deploy_user }}"
+    comment: "The deploy user"
+    shell: /bin/bash
+    create_home: yes
+
+- name: Ensure deploy user is a member of the docker group
+  ansible.builtin.user:
+    name: "{{ deploy_user }}"
+    groups: docker
+    append: yes

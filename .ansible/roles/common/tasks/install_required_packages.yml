@@ -1,0 +1,7 @@
+- name: Install required packages
+  ansible.builtin.apt:
+    name:
+      - etckeeper
+      - fail2ban
+      - ufw
+    state: present
