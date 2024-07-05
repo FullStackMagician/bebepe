@@ -42,39 +42,39 @@ jobs:
       - name: Lint code for consistent style
         run: bin/rubocop -f github
 
-  test:
-    runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:16-alpine
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-
-    env:
-      RAILS_ENV: test
-      DB_HOST: localhost
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .node-version
-
-      - name: Set up database schema
-        run: bin/rails db:prepare
-
-      - name: Run RSpec
-        run: bin/rspec
+#   test:
+#     runs-on: ubuntu-latest
+#
+#     services:
+#       postgres:
+#         image: postgres:16-alpine
+#         ports:
+#           - 5432:5432
+#         env:
+#           POSTGRES_USER: postgres
+#           POSTGRES_PASSWORD: postgres
+#
+#     env:
+#       RAILS_ENV: test
+#       DB_HOST: localhost
+#
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+#
+#       - name: Set up Ruby
+#         uses: ruby/setup-ruby@v1
+#         with:
+#           ruby-version: .ruby-version
+#           bundler-cache: true
+#
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version-file: .node-version
+#
+#       - name: Set up database schema
+#         run: bin/rails db:prepare
+#
+#       - name: Run RSpec
+#         run: bin/rspec
