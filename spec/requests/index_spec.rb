@@ -9,7 +9,7 @@ RSpec.describe "Index", type: :request do
 
     it "renders the 'Hello world!' text" do
       get "/"
-      expect(response.body).to eq 'Hello world!'
+      expect(response.body).to include 'Manage your job applications'
     end
   end
 end
