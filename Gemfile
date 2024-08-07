@@ -5,7 +5,7 @@ source 'https://rubygems.org'
 gem 'net-pop', github: 'ruby/net-pop'
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem 'rails', '~> 7.2.0.beta2'
+gem 'rails', '~> 7.2.0.rc1'
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem 'sprockets-rails'
